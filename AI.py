@@ -222,7 +222,7 @@ def a_star_search_player2(maze, start_pos, exit_pos):
     visited = set()
 
     while heap:
-        _, (row, col), path = heapq.heappop(heap)
+        f_cost, (row, col), path = heapq.heappop(heap)
 
         if (row, col) == exit_pos:
             return path
@@ -246,7 +246,10 @@ def a_star_search_player2(maze, start_pos, exit_pos):
                 and maze[new_row][new_col] != 1
                 and (new_row, new_col) not in visited
             ):
-                heapq.heappush(heap, (heuristic((new_row, new_col), exit_pos), (new_row, new_col), path + [(new_row, new_col)]))
+                g_cost = len(path)  # g-cost is the length of the path so far
+                h_cost = heuristic((new_row, new_col), exit_pos)
+                f_cost = g_cost + h_cost
+                heapq.heappush(heap, (f_cost, (new_row, new_col), path + [(new_row, new_col)]))
 
     return None
 

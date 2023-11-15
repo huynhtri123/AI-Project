@@ -1,8 +1,9 @@
 import pygame
 import sys
 from pygame.locals import *
-
 pygame.init()
+from collections import deque
+import heapq
 
 WIDTH, HEIGHT = 600, 600
 GRID_SIZE = 20
@@ -13,18 +14,50 @@ BLACK = (0, 0, 0)
 
 font = pygame.font.Font(None, 36)
 button1_rect = pygame.Rect(470, 10, 120, 50)
+button2_rect = pygame.Rect(470,80, 120, 50)
+button3_rect = pygame.Rect(470,150, 120, 50)
+button4_rect = pygame.Rect(470,220, 120, 50)
+button5_rect = pygame.Rect(470,290, 120, 50)
 
 visited_cells = []  # New list to store visited cells during DFS
 
 def drawButtons():
     pygame.draw.rect(screen, BLACK, button1_rect, 1)
+    pygame.draw.rect(screen, BLACK, button2_rect, 1)
+    pygame.draw.rect(screen, BLACK, button3_rect, 1)
+    pygame.draw.rect(screen, BLACK, button4_rect, 1)
+    pygame.draw.rect(screen, BLACK, button5_rect, 1)
 
-    button1_text = "Auto"
+
+    button1_text = "DFS"
     button1_text_surface = font.render(button1_text, True, BLACK)
     button1_text_rect = button1_text_surface.get_rect()
     button1_text_rect.center = (button1_rect.centerx, button1_rect.centery)
     screen.blit(button1_text_surface, button1_text_rect)
 
+    button2_text = "BFS"
+    button2_text_surface = font.render(button2_text, True, BLACK)
+    button2_text_rect = button2_text_surface.get_rect()
+    button2_text_rect.center = (button2_rect.centerx, button2_rect.centery)
+    screen.blit(button2_text_surface, button2_text_rect)
+
+    button3_text = "A*"
+    button3_text_surface = font.render(button3_text, True, BLACK)
+    button3_text_rect = button3_text_surface.get_rect()
+    button3_text_rect.center = (button3_rect.centerx, button3_rect.centery)
+    screen.blit(button3_text_surface, button3_text_rect)
+
+    button4_text = "Dijkstra"
+    button4_text_surface = font.render(button4_text, True, BLACK)
+    button4_text_rect = button4_text_surface.get_rect()
+    button4_text_rect.center = (button4_rect.centerx, button4_rect.centery)
+    screen.blit(button4_text_surface, button4_text_rect)
+
+    button5_text = "Bidirectional search"
+    button5_text_surface = font.render(button5_text, True, BLACK)
+    button5_text_rect = button5_text_surface.get_rect()
+    button5_text_rect.center = (button5_rect.centerx, button5_rect.centery)
+    screen.blit(button5_text_surface, button5_text_rect)
 maze = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
@@ -53,6 +86,112 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Maze Game")
 
 clock = pygame.time.Clock()
+
+auto_mode_a_star = False
+a_star_steps_player2 = []
+current_step_a_star_player2 = 0
+
+
+auto_mode_dijkstra = False
+dijkstra_steps_player2 = []
+current_step_dijkstra_player2 = 0
+
+
+
+def dijkstra_search_player2(maze, start_pos, exit_pos):
+    heap = [(0, start_pos, [])]
+    visited = set()
+
+    while heap:
+        _, (row, col), path = heapq.heappop(heap)
+
+        if (row, col) == exit_pos:
+            return path
+
+        if (row, col) in visited:
+            continue
+
+        visited.add((row, col))
+        maze[row][col] = 4  # Mark the path in the maze
+        pygame.time.delay(100)  # Delay for visualization
+        draw_maze(maze, (255, 255, 0))  # Draw the maze with the path
+        pygame.display.flip()
+        pygame.event.pump()
+
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        for dr, dc in directions:
+            new_row, new_col = row + dr, col + dc
+            if (
+                0 <= new_row < len(maze)
+                and 0 <= new_col < len(maze[0])
+                and maze[new_row][new_col] != 1
+                and (new_row, new_col) not in visited
+            ):
+                heapq.heappush(heap, (0, (new_row, new_col), path + [(new_row, new_col)]))
+
+    return None
+
+def heuristic(pos, exit_pos):
+    return abs(pos[0] - exit_pos[0]) + abs(pos[1] - exit_pos[1])
+
+def a_star_search_player2(maze, start_pos, exit_pos):
+    heap = [(0, start_pos, [])]
+    visited = set()
+
+    while heap:
+        _, (row, col), path = heapq.heappop(heap)
+
+        if (row, col) == exit_pos:
+            return path
+
+        if (row, col) in visited:
+            continue
+
+        visited.add((row, col))
+        maze[row][col] = 4  # Mark the path in the maze
+        pygame.time.delay(100)  # Delay for visualization
+        draw_maze(maze, (255, 255, 0))  # Draw the maze with the path
+        pygame.display.flip()
+        pygame.event.pump()
+
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        for dr, dc in directions:
+            new_row, new_col = row + dr, col + dc
+            if (
+                0 <= new_row < len(maze)
+                and 0 <= new_col < len(maze[0])
+                and maze[new_row][new_col] != 1
+                and (new_row, new_col) not in visited
+            ):
+                heapq.heappush(heap, (heuristic((new_row, new_col), exit_pos), (new_row, new_col), path + [(new_row, new_col)]))
+
+    return None
+
+def bfs_player2(maze, start_pos, exit_pos):
+    queue = deque([(start_pos, [])])
+    visited = set()
+
+    while queue:
+        (row, col), path = queue.popleft()
+        if (row, col) == exit_pos:
+            return path
+        if (row, col) in visited:
+            continue
+        visited.add((row, col))
+        maze[row][col] = 4  # Mark the path in the maze
+        pygame.time.delay(100)  # Delay for visualization
+        draw_maze(maze, (255, 255, 0))  # Draw the maze with the path
+        pygame.display.flip()
+        pygame.event.pump()
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        for dr, dc in directions:
+            new_row, new_col = row + dr, col + dc
+            if (0 <= new_row < len(maze) and 0 <= new_col < len(maze[0]) and maze[new_row][new_col] != 1 and (new_row, new_col) not in visited):
+                queue.append(((new_row, new_col), path + [(new_row, new_col)]))
+    return None
+auto_mode_bfs = False
+bfs_steps_player2 = []
+current_step_bfs_player2 = 0
 
 def dfs_player2(maze, current_pos, visited, steps):
     row, col = current_pos
@@ -117,7 +256,15 @@ while True:
             if button1_rect.collidepoint(mouse_x, mouse_y):
                 auto_mode = True
                 solvable = dfs_player2(maze, (player2_y, player2_x), visited_player2, dfs_steps_player2)
-
+            elif button2_rect.collidepoint(mouse_x, mouse_y):
+                auto_mode_bfs = True
+                bfs_steps_player2 = bfs_player2(maze, (player2_y, player2_x), exit_pos)
+            elif button3_rect.collidepoint(mouse_x, mouse_y):
+                auto_mode_a_star = True
+                a_star_steps_player2 = a_star_search_player2(maze, (player2_y, player2_x), exit_pos)
+            elif button4_rect.collidepoint(mouse_x, mouse_y):
+                auto_mode_dijkstra = True
+                dijkstra_steps_player2 = dijkstra_search_player2(maze, (player2_y, player2_x), exit_pos)
         elif not auto_mode and event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP and player1_y > 0 and maze[player1_y - 1][player1_x] != 1:
                 player1_y -= 1
@@ -136,19 +283,29 @@ while True:
                 player2_x -= 1
             elif event.key == pygame.K_d and player2_x < len(maze[0]) - 1 and maze[player2_y][player2_x + 1] != 1:
                 player2_x += 1
-
-    draw_maze(maze,(0, 0, 255))
-    for row, col in visited_cells:
-        pygame.draw.rect(screen, (255, 255, 0), (col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE))
-
+    draw_maze(maze,(255, 255, 255))
 
     if auto_mode and current_step_player2 < len(dfs_steps_player2):
         current_pos_player2 = dfs_steps_player2[current_step_player2]
-        pygame.draw.rect(screen, (255, 0, 0),( current_pos_player2[1] * GRID_SIZE,current_pos_player2[0] * GRID_SIZE,GRID_SIZE,GRID_SIZE,), 3,)
+        pygame.draw.rect(screen, (255, 0, 0),(current_pos_player2[1] * GRID_SIZE,current_pos_player2[0] * GRID_SIZE,GRID_SIZE,GRID_SIZE,), 3,)
         player2_y, player2_x = current_pos_player2
         current_step_player2 += 1
 
-
+    if auto_mode_bfs and current_step_bfs_player2 < len(bfs_steps_player2):
+        current_pos_bfs_player2 = bfs_steps_player2[current_step_bfs_player2]
+        pygame.draw.rect(screen, (255, 0, 0), (current_pos_bfs_player2[1] * GRID_SIZE, current_pos_bfs_player2[0] * GRID_SIZE, GRID_SIZE, GRID_SIZE,), 3)
+        player2_y, player2_x = current_pos_bfs_player2
+        current_step_bfs_player2 += 1
+    if auto_mode_a_star and current_step_a_star_player2 < len(a_star_steps_player2):
+        current_pos_a_star_player2 = a_star_steps_player2[current_step_a_star_player2]
+        pygame.draw.rect(screen, (255, 0, 0), (current_pos_a_star_player2[1] * GRID_SIZE, current_pos_a_star_player2[0] * GRID_SIZE, GRID_SIZE, GRID_SIZE), 3)
+        player2_y, player2_x = current_pos_a_star_player2
+        current_step_a_star_player2 += 1
+    elif auto_mode_dijkstra and current_step_dijkstra_player2 < len(dijkstra_steps_player2):
+        current_pos_dijkstra_player2 = dijkstra_steps_player2[current_step_dijkstra_player2]
+        pygame.draw.rect(screen, (255, 0, 0), (current_pos_dijkstra_player2[1] * GRID_SIZE, current_pos_dijkstra_player2[0] * GRID_SIZE, GRID_SIZE, GRID_SIZE), 3)
+        player2_y, player2_x = current_pos_dijkstra_player2
+        current_step_dijkstra_player2 += 1
     drawButtons()
     pygame.display.flip()
 

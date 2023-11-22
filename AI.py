@@ -5,68 +5,51 @@ pygame.init()
 from collections import deque
 import heapq
 
-WIDTH, HEIGHT = 600, 600
-GRID_SIZE = 20
-PLAYER_SIZE = 20
+WIDTH, HEIGHT = 840, 500
+GRID_SIZE = 30
+PLAYER_SIZE = 30
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+YELLOW = (255, 255, 0)
+XANH = (0,195,0)
+XANH2 = (60,179,113)
+RED = (205,32,31)
 
 font = pygame.font.Font(None, 36)
-button1_rect = pygame.Rect(470, 10, 120, 50)
-button2_rect = pygame.Rect(470,80, 120, 50)
-button3_rect = pygame.Rect(470,150, 120, 50)
-button4_rect = pygame.Rect(470,220, 120, 50)
-button5_rect = pygame.Rect(470,290, 120, 50)
-button6_rect = pygame.Rect(470,360, 120, 50)
+button1_rect = pygame.Rect(200+470, 10, 120, 50)
+button2_rect = pygame.Rect(200+470,80, 120, 50)
+button3_rect = pygame.Rect(200+470,150, 120, 50)
+button4_rect = pygame.Rect(200+470,220, 120, 50)
+button5_rect = pygame.Rect(200+470,290, 120, 50)
+button6_rect = pygame.Rect(200+470,360, 120, 50)
+button7_rect = pygame.Rect(200+470,430, 120, 50)
 
 
 visited_cells = []  # New list to store visited cells during DFS
 
 def drawButtons():
-    pygame.draw.rect(screen, BLACK, button1_rect, 1)
-    pygame.draw.rect(screen, BLACK, button2_rect, 1)
-    pygame.draw.rect(screen, BLACK, button3_rect, 1)
-    pygame.draw.rect(screen, BLACK, button4_rect, 1)
-    pygame.draw.rect(screen, BLACK, button5_rect, 1)
-    pygame.draw.rect(screen, BLACK, button6_rect, 1)
 
+    mouse_pos = pygame.mouse.get_pos()
+    buttons = [button1_rect, button2_rect, button3_rect, button4_rect, button5_rect, button6_rect, button7_rect]
+    button_texts = ["DFS", "BFS", "A*", "Dijkstra", "Greedy", "UCS", "PAUSE"]
 
-    button1_text = "DFS"
-    button1_text_surface = font.render(button1_text, True, BLACK)
-    button1_text_rect = button1_text_surface.get_rect()
-    button1_text_rect.center = (button1_rect.centerx, button1_rect.centery)
-    screen.blit(button1_text_surface, button1_text_rect)
+    for i in range(len(buttons)):
+        # Kiểm tra xem con trỏ chuột có nằm trong nút hay không
+        if buttons[i].collidepoint(mouse_pos):
+            # Nếu có, vẽ nút màu xanh
+            pygame.draw.rect(screen, XANH, buttons[i])
+            pygame.draw.rect(screen, YELLOW, buttons[i], 1)
+        else:
+            # Nếu không, vẽ nút màu đen
+            pygame.draw.rect(screen, XANH2, buttons[i])
+            pygame.draw.rect(screen, BLACK, buttons[i], 1)
 
-    button2_text = "BFS"
-    button2_text_surface = font.render(button2_text, True, BLACK)
-    button2_text_rect = button2_text_surface.get_rect()
-    button2_text_rect.center = (button2_rect.centerx, button2_rect.centery)
-    screen.blit(button2_text_surface, button2_text_rect)
-
-    button3_text = "A*"
-    button3_text_surface = font.render(button3_text, True, BLACK)
-    button3_text_rect = button3_text_surface.get_rect()
-    button3_text_rect.center = (button3_rect.centerx, button3_rect.centery)
-    screen.blit(button3_text_surface, button3_text_rect)
-
-    button4_text = "Dijkstra"
-    button4_text_surface = font.render(button4_text, True, BLACK)
-    button4_text_rect = button4_text_surface.get_rect()
-    button4_text_rect.center = (button4_rect.centerx, button4_rect.centery)
-    screen.blit(button4_text_surface, button4_text_rect)
-
-    button5_text = "Greedy A*"
-    button5_text_surface = font.render(button5_text, True, BLACK)
-    button5_text_rect = button5_text_surface.get_rect()
-    button5_text_rect.center = (button5_rect.centerx, button5_rect.centery)
-    screen.blit(button5_text_surface, button5_text_rect)
-
-    button6_text = "UCS"
-    button6_text_surface = font.render(button6_text, True, BLACK)
-    button6_text_rect = button6_text_surface.get_rect()
-    button6_text_rect.center = (button6_rect.centerx, button6_rect.centery)
-    screen.blit(button6_text_surface, button6_text_rect)
+        # Vẽ văn bản lên nút
+        button_text_surface = font.render(button_texts[i], True, BLACK)
+        button_text_rect = button_text_surface.get_rect()
+        button_text_rect.center = (buttons[i].centerx, buttons[i].centery)
+        screen.blit(button_text_surface, button_text_rect)
 
 maze = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -83,6 +66,7 @@ maze = [
     [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1],
     [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+    [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
 
@@ -114,6 +98,7 @@ def ucs_search_player2(maze, start_pos, exit_pos):
         cost, (row, col), path = heapq.heappop(heap)
 
         if (row, col) == exit_pos:
+            draw_final_path(maze,path)
             return path
 
         if (row, col) in visited:
@@ -152,6 +137,7 @@ def greedy_a_star_search_player2(maze, start_pos, exit_pos):
         _, (row, col), path = heapq.heappop(heap)
 
         if (row, col) == exit_pos:
+            draw_final_path(maze,path)
             return path
 
         if (row, col) in visited:
@@ -189,6 +175,7 @@ def dijkstra_search_player2(maze, start_pos, exit_pos):
         _, (row, col), path = heapq.heappop(heap)
 
         if (row, col) == exit_pos:
+            draw_final_path(maze,path)
             return path
 
         if (row, col) in visited:
@@ -225,6 +212,7 @@ def a_star_search_player2(maze, start_pos, exit_pos):
         f_cost, (row, col), path = heapq.heappop(heap)
 
         if (row, col) == exit_pos:
+            draw_final_path(maze,path)
             return path
 
         if (row, col) in visited:
@@ -252,6 +240,11 @@ def a_star_search_player2(maze, start_pos, exit_pos):
                 heapq.heappush(heap, (f_cost, (new_row, new_col), path + [(new_row, new_col)]))
 
     return None
+def draw_final_path(maze, path):
+    for row, col in path:
+        maze[row][col] = 5
+    a,b = exit_pos
+    maze[a][b]=3
 
 def bfs_player2(maze, start_pos, exit_pos):
     queue = deque([(start_pos, [])])
@@ -260,6 +253,7 @@ def bfs_player2(maze, start_pos, exit_pos):
     while queue:
         (row, col), path = queue.popleft()
         if (row, col) == exit_pos:
+            draw_final_path(maze,path)
             return path
         if (row, col) in visited:
             continue
@@ -290,6 +284,7 @@ def dfs_player2(maze, current_pos, visited, steps):
     pygame.event.pump()
     if current_pos == exit_pos:
         steps.append((row, col))
+        draw_final_path(maze,steps)
         return True
 
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -313,24 +308,40 @@ dfs_steps_player2 = []
 current_step_player2 = 0
 
 auto_mode = False
+##################################################
+#ảnh cho bức tường
+wall_img = pygame.image.load("brick.png")
+#sửa kích thước cho nó vừa
+scaled_wall_img = pygame.transform.scale(wall_img, (GRID_SIZE, GRID_SIZE))
+
+boy_img = pygame.image.load("boyrun.png");
+scaled_boy_img = pygame.transform.scale(boy_img, (GRID_SIZE, GRID_SIZE))
+
+girl_img = pygame.image.load("girlrun.png");
+scaled_girl_img = pygame.transform.scale(girl_img, (GRID_SIZE, GRID_SIZE))
+
+house_img = pygame.image.load("house.png");
+scaled_house_img = pygame.transform.scale(house_img, (GRID_SIZE, GRID_SIZE))
+
 def draw_maze(maze, player_color):
     screen.fill(WHITE)
     for row in range(len(maze)):
         for col in range(len(maze[0])):
             if maze[row][col] == 1:
-                pygame.draw.rect(screen, BLACK, (col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE))
+                screen.blit(scaled_wall_img, (col * GRID_SIZE, row * GRID_SIZE))
             elif maze[row][col] == 2:
                 pygame.draw.rect(screen, (0, 255, 0), (col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE))
             elif maze[row][col] == 3:
-                pygame.draw.rect(screen, (255, 0, 0), (col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE))
+                screen.blit(scaled_house_img, (col * GRID_SIZE, row * GRID_SIZE))
             elif maze[row][col] == 4:  # Path color
                 pygame.draw.rect(screen, player_color, (col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE))
-
+            elif maze[row][col] == 5:  # Path color
+                pygame.draw.rect(screen, (0, 255, 0), (col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE))
     # Draw the players
-    pygame.draw.rect(screen, (0, 0, 255), (player1_x * GRID_SIZE, player1_y * GRID_SIZE, PLAYER_SIZE, PLAYER_SIZE))
-    pygame.draw.rect(screen, (255, 0, 0), (player2_x * GRID_SIZE, player2_y * GRID_SIZE, PLAYER_SIZE, PLAYER_SIZE))
-
+    screen.blit(scaled_boy_img, (player1_x * GRID_SIZE, player1_y * GRID_SIZE))
+    screen.blit(scaled_girl_img, (player2_x * GRID_SIZE, player2_y * GRID_SIZE))
     drawButtons()
+paused = False
 while True:
     drawButtons()
     for event in pygame.event.get():
@@ -340,23 +351,41 @@ while True:
         elif event.type == MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             if button1_rect.collidepoint(mouse_x, mouse_y):
+                paused = False
                 auto_mode = True
                 solvable = dfs_player2(maze, (player2_y, player2_x), visited_player2, dfs_steps_player2)
             elif button2_rect.collidepoint(mouse_x, mouse_y):
+                paused = False
                 auto_mode_bfs = True
                 bfs_steps_player2 = bfs_player2(maze, (player2_y, player2_x), exit_pos)
             elif button3_rect.collidepoint(mouse_x, mouse_y):
+                paused = False
                 auto_mode_a_star = True
                 a_star_steps_player2 = a_star_search_player2(maze, (player2_y, player2_x), exit_pos)
             elif button4_rect.collidepoint(mouse_x, mouse_y):
+                paused = False
                 auto_mode_dijkstra = True
                 dijkstra_steps_player2 = dijkstra_search_player2(maze, (player2_y, player2_x), exit_pos)
             elif button5_rect.collidepoint(mouse_x, mouse_y):
+                paused = False
                 auto_mode_greedy_a = True
                 greedy_a_steps_player2 = greedy_a_star_search_player2(maze, (player2_y, player2_x), exit_pos)
             elif button6_rect.collidepoint(mouse_x, mouse_y):
+                paused = False
                 auto_mode_ucs = True
                 ucs_steps_player2 = ucs_search_player2(maze, (player2_y, player2_x), exit_pos)
+            elif button7_rect.collidepoint(mouse_x, mouse_y):
+                paused = True
+                auto_mode_a_star=False
+                auto_mode_bfs=False
+                auto_mode_ucs=False
+                auto_mode_dijkstra=False
+                auto_mode_greedy_a=False
+                auto_mode=False
+                for row in range(len(maze)) :
+                    for col in range(len(maze[0])):
+                        if maze[row][col] == 4 or maze[row][col] == 5:
+                            maze[row][col] = 0
         elif not auto_mode and event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP and player1_y > 0 and maze[player1_y - 1][player1_x] != 1:
                 player1_y -= 1
@@ -383,27 +412,27 @@ while True:
         player2_y, player2_x = current_pos_player2
         current_step_player2 += 1
 
-    if auto_mode_bfs and current_step_bfs_player2 < len(bfs_steps_player2):
+    if auto_mode_bfs and not paused and current_step_bfs_player2 < len(bfs_steps_player2):
         current_pos_bfs_player2 = bfs_steps_player2[current_step_bfs_player2]
         pygame.draw.rect(screen, (255, 0, 0), (current_pos_bfs_player2[1] * GRID_SIZE, current_pos_bfs_player2[0] * GRID_SIZE, GRID_SIZE, GRID_SIZE,), 3)
         player2_y, player2_x = current_pos_bfs_player2
         current_step_bfs_player2 += 1
-    if auto_mode_a_star and current_step_a_star_player2 < len(a_star_steps_player2):
+    if auto_mode_a_star and not paused and current_step_a_star_player2 < len(a_star_steps_player2):
         current_pos_a_star_player2 = a_star_steps_player2[current_step_a_star_player2]
         pygame.draw.rect(screen, (255, 0, 0), (current_pos_a_star_player2[1] * GRID_SIZE, current_pos_a_star_player2[0] * GRID_SIZE, GRID_SIZE, GRID_SIZE), 3)
         player2_y, player2_x = current_pos_a_star_player2
         current_step_a_star_player2 += 1
-    elif auto_mode_dijkstra and current_step_dijkstra_player2 < len(dijkstra_steps_player2):
+    elif auto_mode_dijkstra and not paused and current_step_dijkstra_player2 < len(dijkstra_steps_player2):
         current_pos_dijkstra_player2 = dijkstra_steps_player2[current_step_dijkstra_player2]
         pygame.draw.rect(screen, (255, 0, 0), (current_pos_dijkstra_player2[1] * GRID_SIZE, current_pos_dijkstra_player2[0] * GRID_SIZE, GRID_SIZE, GRID_SIZE), 3)
         player2_y, player2_x = current_pos_dijkstra_player2
         current_step_dijkstra_player2 += 1
-    if auto_mode_greedy_a and current_step_greedy_a_player2 < len(greedy_a_steps_player2):
+    if auto_mode_greedy_a and not paused and current_step_greedy_a_player2 < len(greedy_a_steps_player2):
         current_pos_greedy_a_player2 = greedy_a_steps_player2[current_step_greedy_a_player2]
         pygame.draw.rect(screen, (255, 0, 0), ( current_pos_greedy_a_player2[1] * GRID_SIZE, current_pos_greedy_a_player2[0] * GRID_SIZE, GRID_SIZE, GRID_SIZE),3)
         player2_y, player2_x = current_pos_greedy_a_player2
         current_step_greedy_a_player2 += 1
-    if auto_mode_ucs and current_step_ucs_player2 < len(ucs_steps_player2):
+    if auto_mode_ucs and not paused and current_step_ucs_player2 < len(ucs_steps_player2):
         current_pos_ucs_player2 = ucs_steps_player2[current_step_ucs_player2]
         pygame.draw.rect(screen, (255, 0, 0), (current_pos_ucs_player2[1] * GRID_SIZE, current_pos_ucs_player2[0] * GRID_SIZE, GRID_SIZE, GRID_SIZE), 3)
         player2_y, player2_x = current_pos_ucs_player2
@@ -412,12 +441,10 @@ while True:
     pygame.display.flip()
 
     if (player1_y, player1_x) == exit_pos:
-        print("Xanh thang")
-        pygame.quit()
-        sys.exit()
+        display_text("PLAYER 1 WINS", XANH, (WIDTH // 2, HEIGHT // 2))
+        pygame.time.delay(2000)  # Display for 2 seconds before quitting
     elif (player2_y, player2_x) == exit_pos:
-        print("Do thang")
-        pygame.quit()
-        sys.exit()
+        display_text("PLAYER 2 WINS", XANH, (WIDTH // 2, HEIGHT // 2))
+        pygame.time.delay(2000)  # Display for 2 seconds before quitting
 
     clock.tick(10)

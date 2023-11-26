@@ -341,6 +341,15 @@ def draw_maze(maze, player_color):
     screen.blit(scaled_boy_img, (player1_x * GRID_SIZE, player1_y * GRID_SIZE))
     screen.blit(scaled_girl_img, (player2_x * GRID_SIZE, player2_y * GRID_SIZE))
     drawButtons()
+
+def display_text(text, color, position):
+    font = pygame.font.Font(None, 72)  # Change the font size here (48 in this case)
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect(center=position)
+    screen.blit(text_surface, text_rect)
+    pygame.display.flip()
+
+
 paused = False
 while True:
     drawButtons()
@@ -443,8 +452,13 @@ while True:
     if (player1_y, player1_x) == exit_pos:
         display_text("PLAYER 1 WINS", XANH, (WIDTH // 2, HEIGHT // 2))
         pygame.time.delay(2000)  # Display for 2 seconds before quitting
-    elif (player2_y, player2_x) == exit_pos:
+        pygame.quit()
+        sys.exit()
+    if (player2_y, player2_x) == exit_pos:
         display_text("PLAYER 2 WINS", XANH, (WIDTH // 2, HEIGHT // 2))
         pygame.time.delay(2000)  # Display for 2 seconds before quitting
+        pygame.quit()
+        sys.exit()
+
 
     clock.tick(10)

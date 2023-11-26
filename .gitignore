@@ -16,8 +16,6 @@ instance/
 
 # Pygame
 *.log
-*.png
-*.jpg
 *.jpeg
 *.bmp
 *.tga

@@ -310,17 +310,17 @@ current_step_player2 = 0
 auto_mode = False
 ##################################################
 #ảnh cho bức tường
-wall_img = pygame.image.load("brick.png")
+wall_img = pygame.image.load("images/brick.png")
 #sửa kích thước cho nó vừa
 scaled_wall_img = pygame.transform.scale(wall_img, (GRID_SIZE, GRID_SIZE))
 
-boy_img = pygame.image.load("boyrun.png");
+boy_img = pygame.image.load("images/boyrun.png");
 scaled_boy_img = pygame.transform.scale(boy_img, (GRID_SIZE, GRID_SIZE))
 
-girl_img = pygame.image.load("girlrun.png");
+girl_img = pygame.image.load("images/girlrun.png");
 scaled_girl_img = pygame.transform.scale(girl_img, (GRID_SIZE, GRID_SIZE))
 
-house_img = pygame.image.load("house.png");
+house_img = pygame.image.load("images/house.png");
 scaled_house_img = pygame.transform.scale(house_img, (GRID_SIZE, GRID_SIZE))
 
 def draw_maze(maze, player_color):

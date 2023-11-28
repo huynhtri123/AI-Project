@@ -4,8 +4,9 @@ from pygame.locals import *
 pygame.init()
 from collections import deque
 import heapq
-
-WIDTH, HEIGHT = 870, 700
+import time as timeL
+import copy
+WIDTH, HEIGHT = 870, 770
 GRID_SIZE = 30
 PLAYER_SIZE = 30
 
@@ -26,16 +27,18 @@ button6_rect = pygame.Rect(250+470,360, 120, 50)
 button7_rect = pygame.Rect(250+470,430, 120, 50)
 button8_rect = pygame.Rect(250+470,500, 120, 50)
 button9_rect = pygame.Rect(250+470,570, 120, 50)
+button10_rect = pygame.Rect(250+470,630, 120, 50)
+button11_rect = pygame.Rect(250+470,700, 120, 50)
 
 
 
 visited_cells = []  # New list to store visited cells during DFS
 
-def drawButtons():
+def drawButtons(step1,time1):
 
     mouse_pos = pygame.mouse.get_pos()
-    buttons = [button1_rect, button2_rect, button3_rect, button4_rect, button5_rect, button6_rect, button7_rect,button8_rect,button9_rect]
-    button_texts = ["DFS", "BFS", "A*", "Dijkstra", "Greedy", "UCS", "PAUSE","NextMap","PrevMap"]
+    buttons = [button1_rect, button2_rect, button3_rect, button4_rect, button5_rect, button6_rect, button7_rect,button8_rect,button9_rect,button10_rect,button11_rect]
+    button_texts = ["DFS", "BFS", "A*", "Dijkstra", "Greedy", "UCS", "PAUSE","NextMap","PrevMap",step1,time1]
 
     for i in range(len(buttons)):
         # Kiểm tra xem con trỏ chuột có nằm trong nút hay không
@@ -99,11 +102,12 @@ current_step_a_star_player2 = 0
 auto_mode_dijkstra = False
 dijkstra_steps_player2 = []
 current_step_dijkstra_player2 = 0
-
+step="0"
+time="0"
 def ucs_search_player2(maze, start_pos, exit_pos):
     heap = [(0, start_pos, [])]
     visited = set()
-
+    global step
     while heap:
         cost, (row, col), path = heapq.heappop(heap)
 
@@ -113,7 +117,8 @@ def ucs_search_player2(maze, start_pos, exit_pos):
 
         if (row, col) in visited:
             continue
-
+        step = int(step) + 1
+        step = str(step)
         visited.add((row, col))
         maze[row][col] = 4  # Mark the path in the maze
         pygame.time.delay(100)  # Delay for visualization
@@ -142,7 +147,7 @@ current_step_ucs_player2 = 0
 def greedy_a_star_search_player2(maze, start_pos, exit_pos):
     heap = [(heuristic(start_pos, exit_pos), start_pos, [])]
     visited = set()
-
+    global step
     while heap:
         _, (row, col), path = heapq.heappop(heap)
 
@@ -152,7 +157,8 @@ def greedy_a_star_search_player2(maze, start_pos, exit_pos):
 
         if (row, col) in visited:
             continue
-
+        step = int(step) + 1
+        step = str(step)
         visited.add((row, col))
         maze[row][col] = 4  # Mark the path in the maze
         pygame.time.delay(100)  # Delay for visualization
@@ -180,7 +186,7 @@ current_step_greedy_a_player2 = 0
 def dijkstra_search_player2(maze, start_pos, exit_pos):
     heap = [(0, start_pos, [])]
     visited = set()
-
+    global step
     while heap:
         _, (row, col), path = heapq.heappop(heap)
 
@@ -190,7 +196,8 @@ def dijkstra_search_player2(maze, start_pos, exit_pos):
 
         if (row, col) in visited:
             continue
-
+        step = int(step) + 1
+        step = str(step)
         visited.add((row, col))
         maze[row][col] = 4  # Mark the path in the maze
         pygame.time.delay(100)  # Delay for visualization
@@ -217,7 +224,7 @@ def heuristic(pos, exit_pos):
 def a_star_search_player2(maze, start_pos, exit_pos):
     heap = [(0, start_pos, [])]
     visited = set()
-
+    global step
     while heap:
         f_cost, (row, col), path = heapq.heappop(heap)
 
@@ -227,7 +234,8 @@ def a_star_search_player2(maze, start_pos, exit_pos):
 
         if (row, col) in visited:
             continue
-
+        step = int(step) + 1
+        step = str(step)
         visited.add((row, col))
         maze[row][col] = 4  # Mark the path in the maze
         pygame.time.delay(100)  # Delay for visualization
@@ -259,7 +267,7 @@ def draw_final_path(maze, path):
 def bfs_player2(maze, start_pos, exit_pos):
     queue = deque([(start_pos, [])])
     visited = set()
-
+    global step
     while queue:
         (row, col), path = queue.popleft()
         if (row, col) == exit_pos:
@@ -267,6 +275,8 @@ def bfs_player2(maze, start_pos, exit_pos):
             return path
         if (row, col) in visited:
             continue
+        step = int(step) + 1
+        step = str(step)
         visited.add((row, col))
         maze[row][col] = 4  # Mark the path in the maze
         pygame.time.delay(100)  # Delay for visualization
@@ -284,9 +294,12 @@ bfs_steps_player2 = []
 current_step_bfs_player2 = 0
 
 def dfs_player2(maze, current_pos, visited, steps):
+    global step
     row, col = current_pos
     visited[row][col] = True
     visited_cells.append((row, col))  # Store the visited cell
+    step = int(step) + 1
+    step = str(step)
     maze[row][col] = 4  # Mark the path in the maze
     pygame.time.delay(100)  # Delay for visualization
     draw_maze(maze, (255, 255, 0))  # Draw the maze with the path
@@ -334,6 +347,8 @@ house_img = pygame.image.load("images/house.png");
 scaled_house_img = pygame.transform.scale(house_img, (GRID_SIZE, GRID_SIZE))
 
 def draw_maze(maze, player_color):
+    global step
+    global time
     screen.fill(WHITE)
     for row in range(len(maze)):
         for col in range(len(maze[0])):
@@ -350,7 +365,7 @@ def draw_maze(maze, player_color):
     # Draw the players
     screen.blit(scaled_boy_img, (player1_x * GRID_SIZE, player1_y * GRID_SIZE))
     screen.blit(scaled_girl_img, (player2_x * GRID_SIZE, player2_y * GRID_SIZE))
-    drawButtons()
+    drawButtons(step,time)
 
 def display_text(text, color, position):
     font = pygame.font.Font(None, 72)  # Change the font size here (48 in this case)
@@ -363,7 +378,7 @@ mazes = [mazemap.maze1, mazemap.maze2, mazemap.maze3, mazemap.maze4,mazemap.maze
 current_index=0
 paused = False
 while True:
-    drawButtons()
+    drawButtons(step,time)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -371,30 +386,67 @@ while True:
         elif event.type == MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             if button1_rect.collidepoint(mouse_x, mouse_y):
+                step ="0"
                 paused = False
                 auto_mode = True
+                start_time = timeL.time()
                 solvable = dfs_player2(maze, (player2_y, player2_x), visited_player2, dfs_steps_player2)
+                end_time = timeL.time()
+                execution_time = end_time - start_time
+                execution_time = round(execution_time, 2)
+                time=str(execution_time)+"s"
             elif button2_rect.collidepoint(mouse_x, mouse_y):
+                step = "0"
                 paused = False
                 auto_mode_bfs = True
+                start_time = timeL.time()
                 bfs_steps_player2 = bfs_player2(maze, (player2_y, player2_x), exit_pos)
+                end_time = timeL.time()
+                execution_time = end_time - start_time
+                execution_time = round(execution_time, 2)
+                time=str(execution_time)+"s"
             elif button3_rect.collidepoint(mouse_x, mouse_y):
+                step = "0"
                 paused = False
                 auto_mode_a_star = True
+                start_time = timeL.time()
                 a_star_steps_player2 = a_star_search_player2(maze, (player2_y, player2_x), exit_pos)
+                end_time = timeL.time()
+                execution_time = end_time - start_time
+                execution_time = round(execution_time, 2)
+                time=str(execution_time)+"s"
             elif button4_rect.collidepoint(mouse_x, mouse_y):
+                step = "0"
                 paused = False
                 auto_mode_dijkstra = True
+                start_time = timeL.time()
                 dijkstra_steps_player2 = dijkstra_search_player2(maze, (player2_y, player2_x), exit_pos)
+                end_time = timeL.time()
+                execution_time = end_time - start_time
+                execution_time = round(execution_time, 2)
+                time=str(execution_time)+"s"
             elif button5_rect.collidepoint(mouse_x, mouse_y):
+                step = "0"
                 paused = False
                 auto_mode_greedy_a = True
+                start_time = timeL.time()
                 greedy_a_steps_player2 = greedy_a_star_search_player2(maze, (player2_y, player2_x), exit_pos)
+                end_time = timeL.time()
+                execution_time = end_time - start_time
+                execution_time = round(execution_time, 2)
+                time=str(execution_time)+"s"
             elif button6_rect.collidepoint(mouse_x, mouse_y):
+                step = "0"
                 paused = False
                 auto_mode_ucs = True
+                start_time = timeL.time()
                 ucs_steps_player2 = ucs_search_player2(maze, (player2_y, player2_x), exit_pos)
+                end_time = timeL.time()
+                execution_time = end_time - start_time
+                execution_time = round(execution_time, 2)
+                time=str(execution_time)+"s"
             elif button7_rect.collidepoint(mouse_x, mouse_y):
+                step = "0"
                 paused = True
                 auto_mode_a_star=False
                 auto_mode_bfs=False
@@ -407,9 +459,11 @@ while True:
                         if maze[row][col] == 4 or maze[row][col] == 5:
                             maze[row][col] = 0
             elif button8_rect.collidepoint(mouse_x,mouse_y):
+                time="0"
+                step = "0"
                 if current_index < len(mazes) - 1:
                     current_index += 1
-                    maze = mazes[current_index]
+                    maze = copy.deepcopy(mazes[current_index])
                     entrance_pos = [(row, col) for row in range(len(maze)) for col in range(len(maze[0])) if maze[row][col] == 2][0]
                     exit_pos = [(row, col) for row in range(len(maze)) for col in range(len(maze[0])) if maze[row][col] == 3][0]
                     player1_y, player1_x = entrance_pos
@@ -432,9 +486,11 @@ while True:
                     display_text("Het Map R", XANH, (WIDTH // 2, HEIGHT // 2))
                     pygame.time.delay(2000)
             elif button9_rect.collidepoint(mouse_x,mouse_y):
+                time="0"
+                step = "0"
                 if current_index > 0:
                     current_index -= 1
-                    maze = mazes[current_index]
+                    maze = copy.deepcopy(mazes[current_index])
                     entrance_pos = [(row, col) for row in range(len(maze)) for col in range(len(maze[0])) if maze[row][col] == 2][0]
                     exit_pos = [(row, col) for row in range(len(maze)) for col in range(len(maze[0])) if maze[row][col] == 3][0]
                     player1_y, player1_x = entrance_pos
@@ -507,12 +563,13 @@ while True:
         #pygame.draw.rect(screen, (255, 0, 0), (current_pos_ucs_player2[1] * GRID_SIZE, current_pos_ucs_player2[0] * GRID_SIZE, GRID_SIZE, GRID_SIZE), 3)
         player2_y, player2_x = current_pos_ucs_player2
         current_step_ucs_player2 += 1
-    drawButtons()
+    drawButtons(step,time)
     pygame.display.flip()
 
     if (player1_y, player1_x) == exit_pos:
         display_text("PLAYER 1 WINS", XANH, (WIDTH // 2, HEIGHT // 2))
         pygame.time.delay(2000)  # Display for 2 seconds before quitting
+        player2_y, player2_x = entrance_pos
 
     if (player2_y, player2_x) == exit_pos:
         display_text("PLAYER 2 WINS", XANH, (WIDTH // 2, HEIGHT // 2))

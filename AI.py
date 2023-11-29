@@ -33,13 +33,13 @@ button6_ucs_rect = pygame.Rect(720, 360, 120, 50)
 button7_pause_rect = pygame.Rect(720, 430, 120, 50)
 button8_nextmap_rect = pygame.Rect(720, 500, 120, 50)
 button9_premap_rect = pygame.Rect(720, 570, 120, 50)
-button13_step_rect = pygame.Rect(10, 700, 120, 50)
-button10_time_rect = pygame.Rect(110, 700, 120, 50)
-button14_restart_rect = pygame.Rect(250, 700, 120, 50)
-button11_nodes_rect = pygame.Rect(360, 700, 120, 50)
-button12_Time_rect = pygame.Rect(720, 640, 120, 50)
-button16_result_rect = pygame.Rect(490, 700, 120, 50)
-button15_Steps_rect = pygame.Rect(600, 700, 120, 50)
+button10_step_rect = pygame.Rect(10, 700, 120, 50)
+button11_time_rect = pygame.Rect(110, 700, 120, 50)
+button12_restart_rect = pygame.Rect(250, 700, 120, 50)
+button13_nodes_rect = pygame.Rect(360, 700, 120, 50)
+button14_Time_rect = pygame.Rect(720, 640, 120, 50)
+button15_result_rect = pygame.Rect(490, 700, 120, 50)
+button16_Steps_rect = pygame.Rect(600, 700, 120, 50)
 
 wall_img = pygame.image.load("images/brick.png")
 scaled_wall_img = pygame.transform.scale(wall_img, (GRID_SIZE, GRID_SIZE))
@@ -70,9 +70,9 @@ clock = pygame.time.Clock()
 def drawButtons(step1, time1, result1):
     mouse_pos = pygame.mouse.get_pos()
     buttons = [button1_dfs_rect, button2_bfs_rect, button3_astar_rect, button4_dijkstra_rect, button5_greedy_rect, 
-               button6_ucs_rect, button7_pause_rect, button8_nextmap_rect, button9_premap_rect, button10_time_rect, 
-               button11_nodes_rect, button12_Time_rect, button13_step_rect, button14_restart_rect, button15_Steps_rect, 
-               button16_result_rect]
+               button6_ucs_rect, button7_pause_rect, button8_nextmap_rect, button9_premap_rect, button11_time_rect, 
+               button13_nodes_rect, button14_Time_rect, button10_step_rect, button12_restart_rect, button16_Steps_rect, 
+               button15_result_rect]
     button_texts = ["DFS", "BFS", "A*", "Dijkstra", "Greedy", "UCS", 
                     "PAUSE","NextMap","PrevMap", step1, time1, "Restart", "Nodes", "Time", result1, "Steps"]
 
@@ -514,7 +514,7 @@ while True:
                 else:
                     display_text("Het map roi", XANH, (WIDTH // 2, HEIGHT // 2))
                     pygame.time.delay(2000)
-            elif button12_Time_rect.collidepoint(mouse_x,mouse_y):
+            elif button14_Time_rect.collidepoint(mouse_x,mouse_y):
                 result="0"
                 time="0"
                 step = "0"

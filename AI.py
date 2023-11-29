@@ -43,7 +43,7 @@ def drawButtons(step1,time1,result1):
 
     mouse_pos = pygame.mouse.get_pos()
     buttons = [button1_rect, button2_rect, button3_rect, button4_rect, button5_rect, button6_rect, button7_rect,button8_rect,button9_rect,button10_rect,button11_rect,button12_rect,button13_rect,button14_rect,button15_rect,button16_rect]
-    button_texts = ["DFS", "BFS", "A*", "Dijkstra", "Greedy", "UCS", "PAUSE","NextMap","PrevMap",step1,time1,"Restart","Step :","Time :",result1,"Result"]
+    button_texts = ["DFS", "BFS", "A*", "Dijkstra", "Greedy", "UCS", "PAUSE","NextMap","PrevMap",step1,time1,"Restart","Nodes","Time",result1,"Steps"]
 
     for i in range(len(buttons)):
         # Kiểm tra xem con trỏ chuột có nằm trong nút hay không

@@ -54,7 +54,7 @@ house_img = pygame.image.load("images/house.png");
 scaled_house_img = pygame.transform.scale(house_img, (GRID_SIZE, GRID_SIZE))
 
 mazes = [mazemap.maze1, mazemap.maze2, mazemap.maze3, mazemap.maze4, mazemap.maze5, mazemap.maze6, mazemap.maze7, mazemap.maze8, mazemap.maze9]
-maze = mazemap.maze1
+maze = copy.deepcopy(mazemap.maze1)
 
 entrance_pos = [(row, col) for row in range(len(maze)) for col in range(len(maze[0])) if maze[row][col] == 2][0]
 exit_pos = [(row, col) for row in range(len(maze)) for col in range(len(maze[0])) if maze[row][col] == 3][0]

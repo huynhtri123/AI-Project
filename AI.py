@@ -27,8 +27,11 @@ button6_rect = pygame.Rect(250+470,360, 120, 50)
 button7_rect = pygame.Rect(250+470,430, 120, 50)
 button8_rect = pygame.Rect(250+470,500, 120, 50)
 button9_rect = pygame.Rect(250+470,570, 120, 50)
-button10_rect = pygame.Rect(250+470,630, 120, 50)
-button11_rect = pygame.Rect(250+470,700, 120, 50)
+button13_rect = pygame.Rect(50,700, 120, 50)
+button10_rect = pygame.Rect(150,700, 120, 50)
+button14_rect = pygame.Rect(300,700, 120, 50)
+button11_rect = pygame.Rect(400,700, 120, 50)
+button12_rect = pygame.Rect(250+470,640, 120, 50)
 
 
 
@@ -37,8 +40,8 @@ visited_cells = []  # New list to store visited cells during DFS
 def drawButtons(step1,time1):
 
     mouse_pos = pygame.mouse.get_pos()
-    buttons = [button1_rect, button2_rect, button3_rect, button4_rect, button5_rect, button6_rect, button7_rect,button8_rect,button9_rect,button10_rect,button11_rect]
-    button_texts = ["DFS", "BFS", "A*", "Dijkstra", "Greedy", "UCS", "PAUSE","NextMap","PrevMap",step1,time1]
+    buttons = [button1_rect, button2_rect, button3_rect, button4_rect, button5_rect, button6_rect, button7_rect,button8_rect,button9_rect,button10_rect,button11_rect,button12_rect,button13_rect,button14_rect]
+    button_texts = ["DFS", "BFS", "A*", "Dijkstra", "Greedy", "UCS", "PAUSE","NextMap","PrevMap",step1,time1,"Restart","Step :","Time :"]
 
     for i in range(len(buttons)):
         # Kiểm tra xem con trỏ chuột có nằm trong nút hay không
@@ -512,6 +515,28 @@ while True:
                 else:
                     display_text("Het Map R", XANH, (WIDTH // 2, HEIGHT // 2))
                     pygame.time.delay(2000)
+            elif button12_rect.collidepoint(mouse_x,mouse_y):
+                time="0"
+                step = "0"
+                maze = copy.deepcopy(mazes[current_index])
+                entrance_pos = [(row, col) for row in range(len(maze)) for col in range(len(maze[0])) if maze[row][col] == 2][0]
+                exit_pos = [(row, col) for row in range(len(maze)) for col in range(len(maze[0])) if maze[row][col] == 3][0]
+                player1_y, player1_x = entrance_pos
+                player2_y, player2_x = entrance_pos
+                draw_maze(maze, (255, 255, 255))
+                paused = True
+                auto_mode_a_star = False
+                auto_mode_bfs = False
+                auto_mode_ucs = False
+                auto_mode_dijkstra = False
+                auto_mode_greedy_a = False
+                auto_mode = False
+                current_step_a_star_player2 = 0
+                current_step_player2 = 0
+                current_step_bfs_player2 = 0
+                current_step_dijkstra_player2 = 0
+                current_step_greedy_a_player2 = 0
+                current_step_ucs_player2 = 0
         elif not auto_mode and event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP and player1_y > 0 and maze[player1_y - 1][player1_x] != 1:
                 player1_y -= 1

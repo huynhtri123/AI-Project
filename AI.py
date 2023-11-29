@@ -447,6 +447,7 @@ while True:
             elif button7_pause_rect.collidepoint(mouse_x, mouse_y):
                 result="0"
                 step = "0"
+                time="0"
                 paused = True
                 auto_mode_a_star=False
                 auto_mode_bfs=False

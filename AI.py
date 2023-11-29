@@ -27,21 +27,23 @@ button6_rect = pygame.Rect(250+470,360, 120, 50)
 button7_rect = pygame.Rect(250+470,430, 120, 50)
 button8_rect = pygame.Rect(250+470,500, 120, 50)
 button9_rect = pygame.Rect(250+470,570, 120, 50)
-button13_rect = pygame.Rect(50,700, 120, 50)
-button10_rect = pygame.Rect(150,700, 120, 50)
-button14_rect = pygame.Rect(300,700, 120, 50)
-button11_rect = pygame.Rect(400,700, 120, 50)
+button13_rect = pygame.Rect(10,700, 120, 50)
+button10_rect = pygame.Rect(110,700, 120, 50)
+button14_rect = pygame.Rect(250,700, 120, 50)
+button11_rect = pygame.Rect(360,700, 120, 50)
 button12_rect = pygame.Rect(250+470,640, 120, 50)
+button16_rect = pygame.Rect(490,700, 120, 50)
+button15_rect = pygame.Rect(600,700, 120, 50)
 
 
 
 visited_cells = []  # New list to store visited cells during DFS
 
-def drawButtons(step1,time1):
+def drawButtons(step1,time1,result1):
 
     mouse_pos = pygame.mouse.get_pos()
-    buttons = [button1_rect, button2_rect, button3_rect, button4_rect, button5_rect, button6_rect, button7_rect,button8_rect,button9_rect,button10_rect,button11_rect,button12_rect,button13_rect,button14_rect]
-    button_texts = ["DFS", "BFS", "A*", "Dijkstra", "Greedy", "UCS", "PAUSE","NextMap","PrevMap",step1,time1,"Restart","Step :","Time :"]
+    buttons = [button1_rect, button2_rect, button3_rect, button4_rect, button5_rect, button6_rect, button7_rect,button8_rect,button9_rect,button10_rect,button11_rect,button12_rect,button13_rect,button14_rect,button15_rect,button16_rect]
+    button_texts = ["DFS", "BFS", "A*", "Dijkstra", "Greedy", "UCS", "PAUSE","NextMap","PrevMap",step1,time1,"Restart","Step :","Time :",result1,"Result"]
 
     for i in range(len(buttons)):
         # Kiểm tra xem con trỏ chuột có nằm trong nút hay không
@@ -107,6 +109,7 @@ dijkstra_steps_player2 = []
 current_step_dijkstra_player2 = 0
 step="0"
 time="0"
+result="0"
 def ucs_search_player2(maze, start_pos, exit_pos):
     heap = [(0, start_pos, [])]
     visited = set()
@@ -262,8 +265,11 @@ def a_star_search_player2(maze, start_pos, exit_pos):
 
     return None
 def draw_final_path(maze, path):
+    global result
     for row, col in path:
         maze[row][col] = 5
+        result=int(result)+1
+        result=str(result)
     a,b = exit_pos
     maze[a][b]=3
 
@@ -368,7 +374,7 @@ def draw_maze(maze, player_color):
     # Draw the players
     screen.blit(scaled_boy_img, (player1_x * GRID_SIZE, player1_y * GRID_SIZE))
     screen.blit(scaled_girl_img, (player2_x * GRID_SIZE, player2_y * GRID_SIZE))
-    drawButtons(step,time)
+    drawButtons(step,time,result)
 
 def display_text(text, color, position):
     font = pygame.font.Font(None, 72)  # Change the font size here (48 in this case)
@@ -381,7 +387,7 @@ mazes = [mazemap.maze1, mazemap.maze2, mazemap.maze3, mazemap.maze4,mazemap.maze
 current_index=0
 paused = False
 while True:
-    drawButtons(step,time)
+    drawButtons(step,time,result)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -389,6 +395,7 @@ while True:
         elif event.type == MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             if button1_rect.collidepoint(mouse_x, mouse_y):
+                result="0"
                 step ="0"
                 paused = False
                 auto_mode = True
@@ -399,6 +406,7 @@ while True:
                 execution_time = round(execution_time, 2)
                 time=str(execution_time)+"s"
             elif button2_rect.collidepoint(mouse_x, mouse_y):
+                result="0"
                 step = "0"
                 paused = False
                 auto_mode_bfs = True
@@ -410,6 +418,7 @@ while True:
                 time=str(execution_time)+"s"
             elif button3_rect.collidepoint(mouse_x, mouse_y):
                 step = "0"
+                result="0"
                 paused = False
                 auto_mode_a_star = True
                 start_time = timeL.time()
@@ -419,6 +428,7 @@ while True:
                 execution_time = round(execution_time, 2)
                 time=str(execution_time)+"s"
             elif button4_rect.collidepoint(mouse_x, mouse_y):
+                result="0"
                 step = "0"
                 paused = False
                 auto_mode_dijkstra = True
@@ -429,6 +439,7 @@ while True:
                 execution_time = round(execution_time, 2)
                 time=str(execution_time)+"s"
             elif button5_rect.collidepoint(mouse_x, mouse_y):
+                result="0"
                 step = "0"
                 paused = False
                 auto_mode_greedy_a = True
@@ -439,6 +450,7 @@ while True:
                 execution_time = round(execution_time, 2)
                 time=str(execution_time)+"s"
             elif button6_rect.collidepoint(mouse_x, mouse_y):
+                result="0"
                 step = "0"
                 paused = False
                 auto_mode_ucs = True
@@ -449,6 +461,7 @@ while True:
                 execution_time = round(execution_time, 2)
                 time=str(execution_time)+"s"
             elif button7_rect.collidepoint(mouse_x, mouse_y):
+                result="0"
                 step = "0"
                 paused = True
                 auto_mode_a_star=False
@@ -462,6 +475,7 @@ while True:
                         if maze[row][col] == 4 or maze[row][col] == 5:
                             maze[row][col] = 0
             elif button8_rect.collidepoint(mouse_x,mouse_y):
+                result="0"
                 time="0"
                 step = "0"
                 if current_index < len(mazes) - 1:
@@ -489,6 +503,7 @@ while True:
                     display_text("Het Map R", XANH, (WIDTH // 2, HEIGHT // 2))
                     pygame.time.delay(2000)
             elif button9_rect.collidepoint(mouse_x,mouse_y):
+                result="0"
                 time="0"
                 step = "0"
                 if current_index > 0:
@@ -516,6 +531,7 @@ while True:
                     display_text("Het Map R", XANH, (WIDTH // 2, HEIGHT // 2))
                     pygame.time.delay(2000)
             elif button12_rect.collidepoint(mouse_x,mouse_y):
+                result="0"
                 time="0"
                 step = "0"
                 maze = copy.deepcopy(mazes[current_index])
@@ -588,7 +604,7 @@ while True:
         #pygame.draw.rect(screen, (255, 0, 0), (current_pos_ucs_player2[1] * GRID_SIZE, current_pos_ucs_player2[0] * GRID_SIZE, GRID_SIZE, GRID_SIZE), 3)
         player2_y, player2_x = current_pos_ucs_player2
         current_step_ucs_player2 += 1
-    drawButtons(step,time)
+    drawButtons(step,time,result)
     pygame.display.flip()
 
     if (player1_y, player1_x) == exit_pos:

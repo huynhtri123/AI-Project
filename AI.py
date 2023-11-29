@@ -213,14 +213,17 @@ dijkstra_steps_player2 = []
 current_step_dijkstra_player2 = 0
 
 def dijkstra_search_player2(maze, start_pos, exit_pos):
+    # Thiết lập chi phí cho mỗi bước di chuyển
+    step_cost = 1
+
     heap = [(0, start_pos, [])]
     visited = set()
     global step
     while heap:
-        _, (row, col), path = heapq.heappop(heap)
+        cost, (row, col), path = heapq.heappop(heap)
 
         if (row, col) == exit_pos:
-            draw_final_path(maze,path)
+            draw_final_path(maze, path)
             return path
 
         if (row, col) in visited:
@@ -243,7 +246,8 @@ def dijkstra_search_player2(maze, start_pos, exit_pos):
                 and maze[new_row][new_col] != 1
                 and (new_row, new_col) not in visited
             ):
-                heapq.heappush(heap, (0, (new_row, new_col), path + [(new_row, new_col)]))
+                new_cost = cost + step_cost  # Sử dụng chi phí cho mỗi bước di chuyển
+                heapq.heappush(heap, (new_cost, (new_row, new_col), path + [(new_row, new_col)]))
 
     return None
 
@@ -256,11 +260,11 @@ def heuristic(pos, exit_pos):
     return abs(pos[0] - exit_pos[0]) + abs(pos[1] - exit_pos[1])
 
 def a_star_search_player2(maze, start_pos, exit_pos):
-    heap = [(0, start_pos, [])]
+    heap = [(0, start_pos, [])] #cost, (row,col), path
     visited = set()
     global step
     while heap:
-        f_cost, (row, col), path = heapq.heappop(heap)
+        f_cost, (row, col), path = heapq.heappop(heap)  #pop phần tử có cost nhỏ nhất (cũng là đầu heap)
 
         if (row, col) == exit_pos:
             draw_final_path(maze,path)

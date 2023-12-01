@@ -34,6 +34,15 @@ def __example():
         'visited_nodes': 254,
         'execute_time': 74.5,
         'steps': 64,
+        'result': 'PLAY2_WIN',
+        'maze': mazemap.maze1,
+    }
+
+    new_history1 = {
+        'visited_nodes': 254,
+        'execute_time': 74.5,
+        'steps': 64,
+        'result': 'PLAY1_WIN',
         'maze': mazemap.maze1,
     }
 

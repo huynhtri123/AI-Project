@@ -6,6 +6,7 @@ import heapq
 import time as timeL
 import copy
 import mazemap
+import history_io
 
 pygame.init()
 
@@ -368,6 +369,21 @@ def dfs_player2(maze, current_pos, visited, steps):
 
     return False
 
+def add_new_history(player_win):
+    global algorithms_name, step, time, result, maze
+    new_history = {
+        'algorithms_name': algorithms_name,
+        'visited_nodes': step,
+        'execute_time': time,
+        'steps': result,
+        'player_win': player_win,
+        'maze': maze,
+    }
+    history_list = history_io.load_history_list()
+    history_list.append(new_history)
+    history_io.save_history_list(history_list)
+
+algorithms_name=None
 step="0"
 time="0"
 result="0"
@@ -383,6 +399,7 @@ while True:
         elif event.type == MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             if button1_dfs_rect.collidepoint(mouse_x, mouse_y):
+                algorithms_name="DFS"
                 result="0"
                 step ="0"
                 paused = False
@@ -394,6 +411,7 @@ while True:
                 execution_time = round(execution_time, 2)
                 time=str(execution_time)+"s"
             elif button2_bfs_rect.collidepoint(mouse_x, mouse_y):
+                algorithms_name = "BFS"
                 result="0"
                 step = "0"
                 paused = False
@@ -405,6 +423,7 @@ while True:
                 execution_time = round(execution_time, 2)
                 time=str(execution_time)+"s"
             elif button3_astar_rect.collidepoint(mouse_x, mouse_y):
+                algorithms_name = "A*"
                 step = "0"
                 result="0"
                 paused = False
@@ -416,6 +435,7 @@ while True:
                 execution_time = round(execution_time, 2)
                 time=str(execution_time)+"s"
             elif button4_dijkstra_rect.collidepoint(mouse_x, mouse_y):
+                algorithms_name = "Dijkstra"
                 result="0"
                 step = "0"
                 paused = False
@@ -427,6 +447,7 @@ while True:
                 execution_time = round(execution_time, 2)
                 time=str(execution_time)+"s"
             elif button5_greedy_rect.collidepoint(mouse_x, mouse_y):
+                algorithms_name = "Greedy_A*"
                 result="0"
                 step = "0"
                 paused = False
@@ -438,6 +459,7 @@ while True:
                 execution_time = round(execution_time, 2)
                 time=str(execution_time)+"s"
             elif button6_ucs_rect.collidepoint(mouse_x, mouse_y):
+                algorithms_name = "UCS"
                 result="0"
                 step = "0"
                 paused = False
@@ -449,6 +471,7 @@ while True:
                 execution_time = round(execution_time, 2)
                 time=str(execution_time)+"s"
             elif button7_pause_rect.collidepoint(mouse_x, mouse_y):
+                algorithms_name=None
                 result="0"
                 step = "0"
                 time="0"
@@ -464,6 +487,7 @@ while True:
                         if maze[row][col] == 4 or maze[row][col] == 5:
                             maze[row][col] = 0
             elif button8_nextmap_rect.collidepoint(mouse_x,mouse_y):
+                algorithms_name = None
                 result="0"
                 time="0"
                 step = "0"
@@ -492,6 +516,7 @@ while True:
                     display_text("Het map roi", XANH, (WIDTH // 2, HEIGHT // 2))
                     pygame.time.delay(2000)
             elif button9_premap_rect.collidepoint(mouse_x,mouse_y):
+                algorithms_name = None
                 result="0"
                 time="0"
                 step = "0"
@@ -520,6 +545,7 @@ while True:
                     display_text("Het map roi", XANH, (WIDTH // 2, HEIGHT // 2))
                     pygame.time.delay(2000)
             elif button14_Time_rect.collidepoint(mouse_x,mouse_y):
+                algorithms_name = None
                 result="0"
                 time="0"
                 step = "0"
@@ -592,11 +618,16 @@ while True:
 
     if (player1_y, player1_x) == exit_pos:
         display_text("PLAYER 1 WINS", XANH, (WIDTH // 2, HEIGHT // 2))
-        pygame.time.delay(2000) 
+        add_new_history(1)
+
+        pygame.time.delay(2000)
         player2_y, player2_x = entrance_pos
+
     if (player2_y, player2_x) == exit_pos:
         display_text("PLAYER 2 WINS", XANH, (WIDTH // 2, HEIGHT // 2))
-        pygame.time.delay(2000)  
+        add_new_history(2)
+
+        pygame.time.delay(2000)
         player2_y, player2_x = entrance_pos
 
     clock.tick(10)

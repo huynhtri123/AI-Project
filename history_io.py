@@ -31,23 +31,26 @@ def save_history_list(history_list):
 
 def __example():
     new_history = {
-        'visited_nodes': 254,
-        'execute_time': 74.5,
-        'steps': 64,
-        'result': 'PLAY2_WIN',
+        'algorithms_name': 'A*',
+        'visited_nodes': '254',
+        'execute_time': '74.5',
+        'steps': '64',
+        'player_win': 2,
         'maze': mazemap.maze1,
     }
 
     new_history1 = {
-        'visited_nodes': 254,
-        'execute_time': 74.5,
-        'steps': 64,
-        'result': 'PLAY1_WIN',
+        'algorithms_name': 'BFS',
+        'visited_nodes': '254',
+        'execute_time': '74.5',
+        'steps': '64',
+        'player_win': 1,
         'maze': mazemap.maze1,
     }
 
     history_list = [
-        new_history
+        new_history,
+        new_history1
     ]
 
     save_history_list(history_list)
@@ -57,6 +60,3 @@ def __example():
     print(loaded_history_list)
     print(type(loaded_history_list))
     print(type(loaded_history_list.pop()))
-
-
-__example()

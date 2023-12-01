@@ -11,7 +11,7 @@ import history_io
 pygame.init()
 
 #SETTING
-WIDTH, HEIGHT = 870, 770
+WIDTH, HEIGHT = 900, 770
 GRID_SIZE = 30
 PLAYER_SIZE = 30
 
@@ -25,22 +25,23 @@ XANHLA = (0, 255, 0)
 VANG = (255, 255, 0)
 
 font = pygame.font.Font(None, 36)
-button1_dfs_rect = pygame.Rect(720, 10, 120, 50)
-button2_bfs_rect = pygame.Rect(720, 80, 120, 50)
-button3_astar_rect = pygame.Rect(720, 150, 120, 50)
-button4_dijkstra_rect = pygame.Rect(720, 220, 120, 50)
-button5_greedy_rect = pygame.Rect(720, 290, 120, 50)
-button6_ucs_rect = pygame.Rect(720, 360, 120, 50)
-button7_pause_rect = pygame.Rect(720, 430, 120, 50)
-button8_nextmap_rect = pygame.Rect(720, 500, 120, 50)
-button9_premap_rect = pygame.Rect(720, 570, 120, 50)
+button1_dfs_rect = pygame.Rect(750, 10, 120, 50)
+button2_bfs_rect = pygame.Rect(750, 80, 120, 50)
+button3_astar_rect = pygame.Rect(750, 150, 120, 50)
+button4_dijkstra_rect = pygame.Rect(750, 220, 120, 50)
+button5_greedy_rect = pygame.Rect(750, 290, 120, 50)
+button6_ucs_rect = pygame.Rect(750, 360, 120, 50)
+button7_pause_rect = pygame.Rect(750, 430, 120, 50)
+button8_nextmap_rect = pygame.Rect(750, 500, 120, 50)
+button9_premap_rect = pygame.Rect(750, 570, 120, 50)
 button10_step_rect = pygame.Rect(10, 700, 120, 50)
 button11_time_rect = pygame.Rect(110, 700, 120, 50)
 button12_restart_rect = pygame.Rect(250, 700, 120, 50)
 button13_nodes_rect = pygame.Rect(360, 700, 120, 50)
-button14_Time_rect = pygame.Rect(720, 640, 120, 50)
+button14_Time_rect = pygame.Rect(750, 640, 120, 50)
 button15_result_rect = pygame.Rect(490, 700, 120, 50)
 button16_Steps_rect = pygame.Rect(600, 700, 120, 50)
+button17_history_rect = pygame.Rect(750, 700, 120, 50)
 
 wall_img = pygame.image.load("images/brick.png")
 scaled_wall_img = pygame.transform.scale(wall_img, (GRID_SIZE, GRID_SIZE))
@@ -54,8 +55,8 @@ scaled_girl_img = pygame.transform.scale(girl_img, (GRID_SIZE, GRID_SIZE))
 house_img = pygame.image.load("images/house.png");
 scaled_house_img = pygame.transform.scale(house_img, (GRID_SIZE, GRID_SIZE))
 
-mazes = [mazemap.maze1, mazemap.maze2, mazemap.maze3, mazemap.maze4, mazemap.maze5, mazemap.maze6, mazemap.maze7, mazemap.maze8, mazemap.maze9]
-maze = copy.deepcopy(mazemap.maze1)
+mazes = [mazemap.maze0, mazemap.maze1, mazemap.maze2, mazemap.maze3, mazemap.maze4, mazemap.maze5, mazemap.maze6, mazemap.maze7, mazemap.maze8, mazemap.maze9]
+maze = copy.deepcopy(mazemap.maze0)
 
 entrance_pos = [(row, col) for row in range(len(maze)) for col in range(len(maze[0])) if maze[row][col] == 2][0]
 exit_pos = [(row, col) for row in range(len(maze)) for col in range(len(maze[0])) if maze[row][col] == 3][0]
@@ -67,15 +68,19 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Maze Game")
 clock = pygame.time.Clock()
 
+#màn hình thứ 2 (khi ấn lịch sử)
+open_window = False
+original_size = screen.get_size()
+
 #Function
-def drawButtons(step1, time1, result1):
+def drawButtons(step, time, result):
     mouse_pos = pygame.mouse.get_pos()
     buttons = [button1_dfs_rect, button2_bfs_rect, button3_astar_rect, button4_dijkstra_rect, button5_greedy_rect, 
                button6_ucs_rect, button7_pause_rect, button8_nextmap_rect, button9_premap_rect, button11_time_rect, 
                button13_nodes_rect, button14_Time_rect, button10_step_rect, button12_restart_rect, button16_Steps_rect, 
-               button15_result_rect]
+               button15_result_rect, button17_history_rect]
     button_texts = ["DFS", "BFS", "A*", "Dijkstra", "Greedy", "UCS", 
-                    "PAUSE","NextMap","PrevMap", step1, time1, "Restart", "Nodes", "Time", result1, "Steps"]
+                    "PAUSE","NextMap","PrevMap", step, time, "Restart", "Nodes", "Time", result, "Steps", "History"]
 
     for i in range(len(buttons)):
         if buttons[i].collidepoint(mouse_pos):  
@@ -128,6 +133,25 @@ def draw_final_path(maze, path):
         result=str(result)
     a,b = exit_pos
     maze[a][b]=3
+            
+font1 = pygame.font.Font(None, 24)
+def history_window(screen, width, height, history_list):
+    cell_height = height // len(history_list)
+    screen.fill(WHITE)  # Xóa màn hình và vẽ màu trắng
+
+    for i, history_entry in enumerate(history_list):
+        # Lấy giá trị từ từ điển
+        algorithms_name = history_entry['algorithms_name']
+        visited_nodes = history_entry['visited_nodes']
+        execute_time = history_entry['execute_time']
+        steps = history_entry['steps']
+        player_win = history_entry['player_win']
+
+        # Hiển thị thông tin của mỗi phần tử trên một dòng
+        text = f"Algorithm: {algorithms_name}, Visited Nodes: {visited_nodes}, Execute Time: {execute_time}, Steps: {steps}, Player Win: {player_win}"
+        text_render = font1.render(text, True, BLACK)
+        text_rect = text_render.get_rect(center=(width // 2 + 300, i * cell_height + cell_height // 2))
+        screen.blit(text_render, text_rect)
 
 #THUAT TOAN
 #UCS
@@ -150,7 +174,7 @@ def ucs_search_player2(maze, start_pos, exit_pos):
         step = str(step)
         visited.add((row, col))
         maze[row][col] = 4  
-        pygame.time.delay(100)  
+        pygame.time.delay(50)  
         draw_maze(maze, VANG) 
         pygame.display.flip()
         pygame.event.pump()
@@ -190,7 +214,7 @@ def greedy_a_star_search_player2(maze, start_pos, exit_pos):
         step = str(step)
         visited.add((row, col))
         maze[row][col] = 4 
-        pygame.time.delay(100)  
+        pygame.time.delay(50)  
         draw_maze(maze, (255, 255, 0))  
         pygame.display.flip()
         pygame.event.pump()
@@ -233,7 +257,7 @@ def dijkstra_search_player2(maze, start_pos, exit_pos):
         step = str(step)
         visited.add((row, col))
         maze[row][col] = 4  
-        pygame.time.delay(100) 
+        pygame.time.delay(50) 
         draw_maze(maze, (255, 255, 0))  
         pygame.display.flip()
         pygame.event.pump()
@@ -277,7 +301,7 @@ def a_star_search_player2(maze, start_pos, exit_pos):
         step = str(step)
         visited.add((row, col))
         maze[row][col] = 4  
-        pygame.time.delay(100) 
+        pygame.time.delay(50) 
         draw_maze(maze, (255, 255, 0)) 
         pygame.display.flip()
         pygame.event.pump()
@@ -318,7 +342,7 @@ def bfs_player2(maze, start_pos, exit_pos):
         step = str(step)
         visited.add((row, col))
         maze[row][col] = 4  
-        pygame.time.delay(100) 
+        pygame.time.delay(50) 
         draw_maze(maze, (255, 255, 0))
         pygame.display.flip()
         pygame.event.pump()
@@ -344,7 +368,7 @@ def dfs_player2(maze, current_pos, visited, steps):
     step = int(step) + 1
     step = str(step)
     maze[row][col] = 4  
-    pygame.time.delay(100) 
+    pygame.time.delay(50) 
     draw_maze(maze, (255, 255, 0))  
     pygame.display.flip()
     pygame.event.pump()
@@ -376,8 +400,7 @@ def add_new_history(player_win):
         'visited_nodes': step,
         'execute_time': time,
         'steps': result,
-        'player_win': player_win,
-        'maze': maze,
+        'player_win': player_win
     }
     history_list = history_io.load_history_list()
     history_list.append(new_history)
@@ -568,6 +591,9 @@ while True:
                 current_step_dijkstra_player2 = 0
                 current_step_greedy_a_player2 = 0
                 current_step_ucs_player2 = 0
+            elif button17_history_rect.collidepoint(mouse_x,mouse_y):
+                open_window = True
+
         elif not auto_mode_dfs and event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP and player1_y > 0 and maze[player1_y - 1][player1_x] != 1:
                 player1_y -= 1
@@ -616,6 +642,25 @@ while True:
     drawButtons(step,time,result)
     pygame.display.flip()
 
+    #dành cho button lịch sử
+    if open_window:
+        # Tạo cửa sổ mới khi open_window = True
+        new_window = pygame.display.set_mode((1000, 1000))
+        pygame.display.set_caption('Lịch sử chạy thuật toán')
+
+        while open_window:
+            loaded_history_list = history_io.load_history_list()
+            history_window(screen, 300, 300, loaded_history_list)
+
+            pygame.display.flip()
+
+            for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        open_window = False
+                        # Khi tắt cửa sổ mới, thiết lập lại kích thước cửa sổ ban đầu
+                        screen = pygame.display.set_mode(original_size)
+                        pygame.display.set_caption('Maze Game')
+
     if (player1_y, player1_x) == exit_pos:
         display_text("PLAYER 1 WINS", XANH, (WIDTH // 2, HEIGHT // 2))
         add_new_history(1)
@@ -629,5 +674,6 @@ while True:
 
         pygame.time.delay(2000)
         player2_y, player2_x = entrance_pos
+
 
     clock.tick(10)

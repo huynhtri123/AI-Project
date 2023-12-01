@@ -1,8 +1,8 @@
 import mazemap
 import json
+import pygame
 
 FILE_NAME = 'data/history.json'
-
 
 def load_history_list():
     try:

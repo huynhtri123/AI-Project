@@ -394,7 +394,7 @@ def dfs_player2(maze, current_pos, visited, steps):
     return False
 
 def add_new_history(player_win):
-    global algorithms_name, step, time, result, maze
+    global algorithms_name, step, time, result
     new_history = {
         'algorithms_name': algorithms_name,
         'visited_nodes': step,
@@ -666,7 +666,7 @@ while True:
         add_new_history(1)
 
         pygame.time.delay(2000)
-        player2_y, player2_x = entrance_pos
+        player1_y, player1_x = entrance_pos
 
     if (player2_y, player2_x) == exit_pos:
         display_text("PLAYER 2 WINS", XANH, (WIDTH // 2, HEIGHT // 2))

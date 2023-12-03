@@ -1,6 +1,4 @@
-import mazemap
 import json
-import pygame
 
 FILE_NAME = 'data/history.json'
 
@@ -36,7 +34,6 @@ def __example():
         'execute_time': '74.5',
         'steps': '64',
         'player_win': 2,
-        'maze': mazemap.maze1,
     }
 
     new_history1 = {
@@ -45,7 +42,6 @@ def __example():
         'execute_time': '74.5',
         'steps': '64',
         'player_win': 1,
-        'maze': mazemap.maze1,
     }
 
     history_list = [
